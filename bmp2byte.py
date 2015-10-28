@@ -67,9 +67,35 @@ def main():
     print("\n Columns \n")
     print(columns)
 
+    # The columns array contains 8 pixel arrays for each column. The values in each sub array need to be converted first into binary then into hex.
 
+    hex_values = []
+    for c in columns:
+        print(c)
+        d = 0
+        #for c in cmn:
+        if c[0] == 1:
+            d = d + 128
+        if c[1] == 1:
+            d = d + 64
+        if c[2] == 1:
+            d = d +32
+        if c[3] == 1:
+            d = d + 16
+        if c[4] == 1:
+            d = d + 8
+        if c[5] == 1:
+            d = d + 4
+        if c[6] == 1:
+            d = d + 2
+        if c[7] == 1:
+            d = d + 1
+        h = hex(d)
+        hex_values.append(h)
 
-    # Next step. Read vertically, 8 lines of the array (1 page height)
+    print(hex_values)
+
+    # Next step - reformat hex_value array into comma seperated sting of 2 digit hex byte values eg: 0F, 12, E3, ...
 
 
 if __name__ == "__main__":
