@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#!/usr/bin/env python
 """
 bmp2byte.py - Convert a *.bmp image into a byte array
 """
