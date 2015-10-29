@@ -64,8 +64,8 @@ def main():
         offset = offset + 8
 
 
-    print("\n Columns \n")
-    print(columns)
+    #print("\n Columns \n")
+    #print(columns)
 
     # The columns array contains 8 pixel arrays for each column. The values in each sub array need to be converted first into binary then into hex.
 
@@ -92,11 +92,20 @@ def main():
             d = d + 1
         h = hex(d)
         hex_values.append(h)
-
     print(hex_values)
-
     # Next step - reformat hex_value array into comma seperated sting of 2 digit hex byte values eg: 0F, 12, E3, ...
+    f = open('output.txt','wb')
+    for h in hex_values:
+        if h == '0x0':
+            print("0x00, ",end="")
+            f.write('0x00, ')
+        else:
+            #h = h.lstrip("0x")
+            print(h +", ",end="")
+            f.write(h + ', ')
+    print("\n")
+    f.close()
 
-
+    
 if __name__ == "__main__":
     main()
