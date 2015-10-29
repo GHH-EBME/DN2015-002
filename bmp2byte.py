@@ -92,11 +92,14 @@ def main():
             d = d + 1
         h = hex(d)
         hex_values.append(h)
-
     print(hex_values)
-
     # Next step - reformat hex_value array into comma seperated sting of 2 digit hex byte values eg: 0F, 12, E3, ...
-
+    for h in hex_values:
+        if h == '0x0':
+            print("00, ",end="")
+        else:
+            print(h.lstrip("0x")+", ",end="")
+    print("\n")
 
 if __name__ == "__main__":
     main()
