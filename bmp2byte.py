@@ -2,54 +2,34 @@
 """
 bmp2byte.py - Convert a *.bmp image into a byte array
 """
-
+# Imports
 from __future__ import print_function
 import sys
 from PIL import Image
 import numpy as np
 
+# Configuration
+page_height_px = 8 # Page is 8 pixels high
+img_file = "test_image2.bmp"
+
 def main():
-    page_height = 8 # Page is 8 pixels high
-
-    im = Image.open("test_image2.bmp")
-    #p = np.array(im)
-    #print(p)
-    print("File Format: " + im.format)
-    print("Image Size [W,H]: " + str(im.size))
-    width,height =im.size
-    page_count = height/page_height # Work out the number of pages
-    print("Image Palette: " + str(im.palette))
-
-    # 1 = (1-bit pixels, black and white, stored with one pixel per byte)
-    # L = (8-bit pixels, black and white)
-    print("Image Mode: " +im.mode)
-
-    # Need to convert array from mode = 1 to obtain usable data.
-    data = np.array(im.convert("L"))
-    #print(data)
-    #print(np.array(im.convert("L"))) # Looks good at this point,
-
-    # Next step. Read each value in the array.
-    data2 = []
-    for dat in data:
-        for d in dat:
-            data2.append(d)
-    #print(data2)
-
-    # Next step. If 255 then convert to 0, If zero convert to 1.
-    # Round up or down other values.
-    data3 = []
-    for d in data2:
-        if (d >=127):
-            data3.append(0)
-        else:
-            data3.append(1)
-
-    # data3 contains a list of pixels that make up the image.
+    ####################################################################
+    # Stage 1: Extract Pixel Data From Image
+    ####################################################################
+    data = get_data(img_file)
+    width,height = extract_img_data(data)
+    page_count = calculate_pages(width,height,page_height_px)
+    data2 = convert_mode(data)
+    data3 = create_data_array(data2)
+    checked_data = check_data_len(data3,8192)
+    data4 = modify_data_values(checked_data)
+    # data4 contains a list of pixels that make up the image.
     #If the pixel is set then it is '1' and '0' if it is clear.
-    print(data3) # Converting correctly.
+    #print(data4) # Converting correctly.
+    ####################################################################
+    # Stage 2: Split Pixel Data into Display Pages
+    ####################################################################
 
-    """
     # With a large image there is alot of data to process. Let's split it up into pages before we go any furthur.
     pages = []
     bits_per_page = page_height * width
@@ -64,6 +44,8 @@ def main():
         pages.append(page)
     #print("Pages: ")
     print(pages)
+    ####################################################################
+    # Stage 3: Reformat Display Page into Verticle Columns
     ####################################################################
     """
     page_cols = []
@@ -92,6 +74,7 @@ def main():
         #print("\n Columns \n")
     print(cols)
     #print(page_cols)
+    """
 ########################################################################
 """
     # The columns array contains 8 pixel arrays for each column. The values in each sub array need to be converted first into binary then into hex.
@@ -132,6 +115,7 @@ def main():
         f.write('\n')
     f.close()
 """
+
 """
     for page[0] in page_hex:
 
@@ -192,6 +176,56 @@ def main():
         #print("\n")
     #f.close()
 """
+def get_data(data_file):
+    f = Image.open(data_file)
+    return f
+def extract_img_data(img_file):
+    print("File Format: " + img_file.format)
+    print("Image Size [W,H]: " + str(img_file.size))
+    print("Image Palette: " + str(img_file.palette))
+    # 1 = (1-bit pixels, black and white, stored with one pixel per byte)
+    # L = (8-bit pixels, black and white)
+    print("Image Mode: " +img_file.mode)
+    img_width,img_height = img_file.size
+    return img_width,img_height
+def convert_mode(data_to_convert):
+    # Need to convert array from mode = 1 to obtain usable data.
+    converted_data = np.array(data_to_convert.convert("L"))
+    print("Image Mode Converted to 'L'")
+    return converted_data
+def calculate_pages(img_width, img_height, page_height):
+    # Dimensions all in pixels
+    page_count = img_height/page_height
+    return page_count
+def check_data_len(data,expected_length):
+    x = len(data)
+    if (x == expected_length):
+        print("Data Length Check: Pass")
+    else:
+        print("Data Length Check: Failed")
+        print("Expected Length: " + str(expected_length))
+        print("Actual Length: " + str(x))
+        sys.exit("Invalid Data")
+    return data
+def create_data_array(data):
+    # Read each value into array.
+    data_array = []
+    for dat in data:
+        for d in dat:
+            data_array.append(d)
+    return data_array
+def modify_data_values(data):
+    # If 255 then convert to 0, If zero convert to 1.
+    # Round up or down other values.
+    data_array = []
+    for d in data:
+        if (d >=127):
+            data_array.append(0)
+        else:
+            data_array.append(1)
+    return data_array
+
+
 
 if __name__ == "__main__":
     main()
