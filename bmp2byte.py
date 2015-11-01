@@ -11,6 +11,7 @@ import numpy as np
 # Configuration
 page_height_px = 8 # Page is 8 pixels high
 img_file = "test_image2.bmp"
+output_file = "output.txt"
 
 def main():
     ####################################################################
@@ -29,6 +30,7 @@ def main():
     # data4 contains a list of pixels that make up the image.
     #If the pixel is set then it is '1' and '0' if it is clear.
     #print(data4) # Converting correctly.
+
     ####################################################################
     # Stage 2: Split Pixel Data into Display Pages
     ####################################################################
@@ -37,6 +39,10 @@ def main():
     pixels_per_page = page_height_px * width
     # With a large image there is alot of data to process. Let's split it up into pages before we go any furthur.
     pages = get_pages(page_count,pixels_per_page,data4)
+
+    ####################################################################
+    # Stage 3: Reformat Display Page into Vertical Columns
+    ####################################################################
     #TODO: change width variable as this is taken from the original
     #      image. If this value is not a multiple of 8 then the code
     #      might not work. Once image padding is implemented for images
@@ -45,133 +51,19 @@ def main():
     converted_pages = convert_pages(pages,width,page_height_px)
     image_data = converted_image(converted_pages)
     #print(image_data)
-    """
+
     ####################################################################
-    # Stage 3: Reformat Display Page into Vertical Columns
+    # Stage 4: Store Output in a file
     ####################################################################
+    save_to_file(output_file, image_data)
 
-    page_cols = []
-    #for each_page in pages:
-
-        # Next step. Convert pixel data into hex format.
-        # Assume data is going to be written to a page of 8 pixels high and
-        # written from left to right.Each block of 8 pixels make up one column of the image.
-
-    columns= []
-    col_count = 0
-
-    while (col_count < width):
-        cols = []
-        for col in range(0,width):
-            column = []
-            for pixel in range(0,8):
-                x = data3[col + (pixel * width)]
-                column.append(x)
-            cols.append(column)
-            col_count = col_count + 1
-        columns.append(cols)
-
-    #page_cols.append(columns)
-
-        #print("\n Columns \n")
-    print(cols)
-    #print(page_cols)
-    """
-
-    """
+    ####################################################################
+    # End
+    ####################################################################
+    sys.exit("Conversion Complete")
     ####################################################################
 
-
-    #rint(len(page_hex))
-        #print(hex_values)
-
-    """
-    f = open('output.txt','wb')
-    #for c in range(0,page_count):
-    row_count = 0
-    row_count2 = 0
-    for h in image_data:
-
-        if (len(h) == 4):
-            pass
-            #f.write(str(h) + ' ,')
-        else: #Add missing leading zero
-            h = h[:2] + '0' + h[2:]
-        f.write(str(h) + ', ')
-
-        row_count = row_count + 1
-
-        # Add additional separators to output
-        if row_count == 16:
-            f.write('\n')
-            row_count = 0
-            row_count2 = row_count2 + 1
-        if row_count2 == 8:
-            f.write('\n')
-            row_count2 = 0
-
-    f.close()
-
-    """
-    for page[0] in page_hex:
-
-    # Next step - reformat hex_value array into comma seperated sting of 2 digit hex byte values eg: 0F, 12, E3, ...
-
-        for h in hex_values:
-            if h == '0x0':
-                print("0x00, ",end="")
-                #f.write('0x00, ')
-            elif h == '0x1':
-                print("0x01, ",end="")
-                #f.write('0x01, ')
-            elif h == '0x2':
-                print("0x02, ",end="")
-                #f.write('0x02, ')
-            elif h == '0x3':
-                print("0x03, ",end="")
-                #f.write('0x03, ')
-            elif h == '0x4':
-                print("0x04, ",end="")
-                #f.write('0x04, ')
-            elif h == '0x5':
-                print("0x05, ",end="")
-                #f.write('0x05, ')
-            elif h == '0x6':
-                print("0x06, ",end="")
-                #f.write('0x06, ')
-            elif h == '0x7':
-                print("0x07, ",end="")
-                #f.write('0x07, ')
-            elif h == '0x8':
-                print("0x08, ",end="")
-                #f.write('0x08, ')
-            elif h == '0x9':
-                print("0x09, ",end="")
-                #f.write('0x09, ')
-            elif h == '0xa':
-                print("0x0a, ",end="")
-                #f.write('0x0a, ')
-            elif h == '0xb':
-                print("0x0b, ",end="")
-                #f.write('0x0b, ')
-            elif h == '0xc':
-                print("0x0c, ",end="")
-                #f.write('0x0c, ')
-            elif h == '0xd':
-                print("0x0d, ",end="")
-                #f.write('0x0d, ')
-            elif h == '0xe':
-                print("0x0e, ",end="")
-                #f.write('0x0e, ')
-            elif h == '0xf':
-                print("0x0f, ",end="")
-                #f.write('0x0f, ')
-            else:
-                #f.write(h + ', ')
-                print(str(h) + ', ')
-        #print("\n")
-    #f.close()
-    """
+# Functions
 def get_data(data_file):
     f = Image.open(data_file)
     return f
@@ -293,6 +185,31 @@ def converted_image(converted_pages):
         for col in page:
             image_hex.append(col)
     return image_hex
+def save_to_file(output_file, image_data):
+    f = open(output_file,'wb')
+    #for c in range(0,page_count):
+    row_count = 0
+    row_count2 = 0
+    for h in image_data:
 
+        if (len(h) == 4):
+            pass
+            #f.write(str(h) + ' ,')
+        else: #Add missing leading zero
+            h = h[:2] + '0' + h[2:]
+        f.write(str(h) + ', ')
+
+        row_count = row_count + 1
+
+        # Add additional separators to output
+        if row_count == 16:
+            f.write('\n')
+            row_count = 0
+            row_count2 = row_count2 + 1
+        if row_count2 == 8:
+            f.write('\n')
+            row_count2 = 0
+
+    f.close()
 if __name__ == "__main__":
     main()
